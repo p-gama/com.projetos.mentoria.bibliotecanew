@@ -1,12 +1,10 @@
 package com.projetos.mentoria.biblioteca.application.usecases.impl;
 
-import com.projetos.mentoria.biblioteca.application.mapper.LivroMapper;
+import com.projetos.mentoria.biblioteca.application.mapper.BookItemMapper;
 import com.projetos.mentoria.biblioteca.application.model.BookItemResponse;
-import com.projetos.mentoria.biblioteca.application.model.ClienteDTO;
 import com.projetos.mentoria.biblioteca.application.usecases.LivroUseCase;
 import com.projetos.mentoria.biblioteca.domain.entities.BookItemEntity;
 import com.projetos.mentoria.biblioteca.domain.entities.BookSearchEntity;
-import com.projetos.mentoria.biblioteca.domain.entities.ClienteEntity;
 import com.projetos.mentoria.biblioteca.domain.gateways.LivroGateway;
 import org.springframework.stereotype.Component;
 
@@ -14,17 +12,17 @@ import org.springframework.stereotype.Component;
 public class LivroUseCaseImpl implements LivroUseCase {
     private final LivroGateway livroGateway;
 
-    private final LivroMapper livroMapper;
+    private final BookItemMapper bookItemMapper;
 
-    public LivroUseCaseImpl(LivroGateway livroGateway, LivroMapper livroMapper) {
+    public LivroUseCaseImpl(LivroGateway livroGateway, BookItemMapper bookItemMapper) {
         this.livroGateway = livroGateway;
-        this.livroMapper = livroMapper;
+        this.bookItemMapper = bookItemMapper;
     }
 
 
     @Override
     public BookItemEntity salvarLivro(BookItemResponse book) {
-        BookItemEntity bookItemEntity = livroMapper.toBookItemEntity(book);
+        BookItemEntity bookItemEntity = bookItemMapper.toBookItemEntity(book);
         return livroGateway.salvarLivro(bookItemEntity);
     }
 

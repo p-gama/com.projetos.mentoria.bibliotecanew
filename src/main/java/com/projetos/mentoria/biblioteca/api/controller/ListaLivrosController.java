@@ -1,10 +1,8 @@
 package com.projetos.mentoria.biblioteca.api.controller;
 
 import com.projetos.mentoria.biblioteca.application.mapper.ClienteMapper;
-import com.projetos.mentoria.biblioteca.application.mapper.LivroMapper;
+import com.projetos.mentoria.biblioteca.application.mapper.ListaLivrosMapper;
 import com.projetos.mentoria.biblioteca.application.model.BookIdRequest;
-import com.projetos.mentoria.biblioteca.application.model.BookItemResponse;
-import com.projetos.mentoria.biblioteca.application.model.ClienteDTO;
 import com.projetos.mentoria.biblioteca.application.model.ListaLivrosResponse;
 import com.projetos.mentoria.biblioteca.application.usecases.ClienteUseCase;
 import com.projetos.mentoria.biblioteca.application.usecases.ListaLivrosUseCase;
@@ -12,8 +10,6 @@ import com.projetos.mentoria.biblioteca.application.usecases.LivroUseCase;
 import com.projetos.mentoria.biblioteca.domain.entities.BookItemEntity;
 import com.projetos.mentoria.biblioteca.domain.entities.ClienteEntity;
 import com.projetos.mentoria.biblioteca.domain.entities.ListaLivrosEntity;
-import com.projetos.mentoria.biblioteca.infra.repository.entities.BookItem;
-import com.projetos.mentoria.biblioteca.infra.repository.entities.ListaLivros;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,14 +33,15 @@ public class ListaLivrosController {
 
     private final ClienteMapper clienteMapper;
 
-    private final LivroMapper livroMapper;
+    private final ListaLivrosMapper listaLivrosMapper;
 
-    public ListaLivrosController(ListaLivrosUseCase listaLivrosUseCase, LivroUseCase livroUseCase, ClienteUseCase clienteUseCase, ClienteMapper clienteMapper, LivroMapper livroMapper) {
+
+    public ListaLivrosController(ListaLivrosUseCase listaLivrosUseCase, LivroUseCase livroUseCase, ClienteUseCase clienteUseCase, ClienteMapper clienteMapper, ListaLivrosMapper listaLivrosMapper) {
         this.listaLivrosUseCase = listaLivrosUseCase;
         this.livroUseCase = livroUseCase;
         this.clienteUseCase = clienteUseCase;
         this.clienteMapper = clienteMapper;
-        this.livroMapper = livroMapper;
+        this.listaLivrosMapper = listaLivrosMapper;
     }
 
     @PostMapping
@@ -57,7 +54,7 @@ public class ListaLivrosController {
 
         ListaLivrosEntity novaLista = listaLivrosUseCase.criarLista(lista);
         novaLista.setCliente(lista.getCliente());
-        ListaLivrosResponse response = livroMapper.toListaLivrosResponse(novaLista);
+        ListaLivrosResponse response = listaLivrosMapper.toListaLivrosResponse(novaLista);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -66,7 +63,7 @@ public class ListaLivrosController {
         try {
             List<ListaLivrosEntity> listas = listaLivrosUseCase.listarListas();
             List<ListaLivrosResponse> response = listas.stream()
-                    .map(livroMapper::toListaLivrosResponse)
+                    .map(listaLivrosMapper::toListaLivrosResponse)
                     .collect(Collectors.toList());
             return ResponseEntity.ok(response);
         } catch (Exception e) {
@@ -78,7 +75,7 @@ public class ListaLivrosController {
     public ResponseEntity<List<ListaLivrosResponse>> listarListasPorCliente(@PathVariable Long clienteId) {
         List<ListaLivrosEntity> listas = listaLivrosUseCase.listarListasPorCliente(clienteId);
         List<ListaLivrosResponse> response = listas.stream()
-                .map(livroMapper::toListaLivrosResponse)
+                .map(listaLivrosMapper::toListaLivrosResponse)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(response);
     }
@@ -107,7 +104,7 @@ public class ListaLivrosController {
         novoLivro.setLista(lista);
         lista.getItems().add(novoLivro);
 
-        var listaResponse = livroMapper.toListaLivrosResponse(lista);
+        var listaResponse = listaLivrosMapper.toListaLivrosResponse(lista);
         var listaEntity = listaLivrosUseCase.salvarLista(listaResponse);
 
         return ResponseEntity.ok(listaResponse);

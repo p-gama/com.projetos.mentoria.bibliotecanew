@@ -13,21 +13,4 @@ public interface ClienteEntityMapper {
 
     Cliente toCliente (ClienteEntity cliente);
 
-    @AfterMapping
-    default void toClienteAfterMapping(ClienteEntity entity, @MappingTarget Cliente target) {
-        if (target != null) {
-            // Evite recursão infinita
-            target.setEnderecos(null);
-        }
-    }
-
-    @AfterMapping
-    default void toClienteEntityAfterMapping(Cliente dto, @MappingTarget ClienteEntity target) {
-        if (target != null) {
-            // Evite recursão infinita
-            target.setEnderecos(null);
-        }
-    }
-
-
 }

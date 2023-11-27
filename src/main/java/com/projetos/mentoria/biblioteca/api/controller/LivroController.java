@@ -1,13 +1,13 @@
 package com.projetos.mentoria.biblioteca.api.controller;
 
+import com.projetos.mentoria.biblioteca.application.mapper.BookItemMapper;
+import com.projetos.mentoria.biblioteca.application.mapper.BookSearchMapper;
 import com.projetos.mentoria.biblioteca.application.model.BookItemResponse;
 import com.projetos.mentoria.biblioteca.application.model.BookSearchResponse;
 import com.projetos.mentoria.biblioteca.application.usecases.LivroUseCase;
 import com.projetos.mentoria.biblioteca.domain.entities.BookItemEntity;
 import com.projetos.mentoria.biblioteca.domain.entities.BookSearchEntity;
-import com.projetos.mentoria.biblioteca.infra.repository.entities.BookItem;
-import com.projetos.mentoria.biblioteca.application.mapper.LivroMapper;
-import com.projetos.mentoria.biblioteca.infra.repository.entities.BookSearch;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,18 +17,21 @@ import org.springframework.web.bind.annotation.*;
 public class LivroController {
     private final LivroUseCase livroUseCase;
 
-    private final LivroMapper livroMapper;
+    private final BookItemMapper bookItemMapper;
 
+    private final BookSearchMapper bookSearchMapper;
     @Autowired
-    public LivroController(LivroUseCase livroUseCase, LivroMapper livroMapper) {
+    public LivroController(LivroUseCase livroUseCase, BookItemMapper bookItemMapper, BookSearchMapper bookSearchMapper) {
         this.livroUseCase = livroUseCase;
-        this.livroMapper = livroMapper;
+        this.bookItemMapper = bookItemMapper;
+        this.bookSearchMapper = bookSearchMapper;
     }
+
 
     @GetMapping("/search")
     public ResponseEntity<BookSearchResponse> searchBooks(@RequestParam("query") String query) {
         BookSearchEntity searchEntity = livroUseCase.searchBooks(query);
-        BookSearchResponse result = livroMapper.toBookSearchResponse(searchEntity);
+        BookSearchResponse result = bookSearchMapper.toBookSearchResponse(searchEntity);
         return ResponseEntity.ok(result);
     }
 
@@ -40,6 +43,6 @@ public class LivroController {
             return ResponseEntity.notFound().build();
         }
 
-        return ResponseEntity.ok(livroMapper.toBookItemResponse(livro));
+        return ResponseEntity.ok(bookItemMapper.toBookItemResponse(livro));
     }
 }

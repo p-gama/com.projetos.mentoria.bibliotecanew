@@ -2,8 +2,8 @@ package com.projetos.mentoria.biblioteca.infra.dataproviders;
 
 import com.projetos.mentoria.biblioteca.domain.entities.BookItemEntity;
 import com.projetos.mentoria.biblioteca.domain.entities.BookSearchEntity;
-import com.projetos.mentoria.biblioteca.infra.dataproviders.mapper.LivroEntityMapper;
-import com.projetos.mentoria.biblioteca.infra.repository.entities.BookItem;
+import com.projetos.mentoria.biblioteca.infra.dataproviders.mapper.BookItemEntityMapper;
+import com.projetos.mentoria.biblioteca.infra.dataproviders.mapper.BookSearchEntityMapper;
 import com.projetos.mentoria.biblioteca.domain.gateways.LivroGateway;
 import com.projetos.mentoria.biblioteca.infra.clients.GoogleBooksApiClient;
 import com.projetos.mentoria.biblioteca.infra.repository.LivroRepository;
@@ -18,29 +18,32 @@ public class LivroDataProvider implements LivroGateway {
 
     private final GoogleBooksApiClient googleBooksApiClient;
 
-    private final LivroEntityMapper livroEntityMapper;
+    private final BookItemEntityMapper bookItemEntityMapper;
 
-    public LivroDataProvider(LivroRepository livroRepository, GoogleBooksApiClient googleBooksApiClient, LivroEntityMapper livroEntityMapper) {
+    private final BookSearchEntityMapper bookSearchEntityMapper;
+
+    public LivroDataProvider(LivroRepository livroRepository, GoogleBooksApiClient googleBooksApiClient, BookItemEntityMapper bookItemEntityMapper, BookSearchEntityMapper bookSearchEntityMapper) {
         this.livroRepository = livroRepository;
         this.googleBooksApiClient = googleBooksApiClient;
-        this.livroEntityMapper = livroEntityMapper;
+        this.bookItemEntityMapper = bookItemEntityMapper;
+        this.bookSearchEntityMapper = bookSearchEntityMapper;
     }
 
 
     @Override
     public BookItemEntity salvarLivro(BookItemEntity book) {
-        var livro = livroEntityMapper.toBookItem(book);
+        var livro = bookItemEntityMapper.toBookItem(book);
         var livroSalvo = livroRepository.save(livro);
-        return livroEntityMapper.toBookItemEntity(livroSalvo);
+        return bookItemEntityMapper.toBookItemEntity(livroSalvo);
     }
 
     @Override
     public BookItemEntity searchBookById(String bookId) {
-        return livroEntityMapper.toBookItemEntity(googleBooksApiClient.searchBookById(bookId));
+        return bookItemEntityMapper.toBookItemEntity(googleBooksApiClient.searchBookById(bookId));
     }
 
     @Override
     public BookSearchEntity searchBooks(String query) {
-        return livroEntityMapper.toBookSearchEntity(googleBooksApiClient.searchBooks(query));
+        return bookSearchEntityMapper.toBookSearchEntity(googleBooksApiClient.searchBooks(query));
     }
 }
